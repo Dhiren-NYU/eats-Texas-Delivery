@@ -1,8 +1,5 @@
-const apigClient = apigClientFactory.newClient({
-    apiKey: 'YOUR_API_KEY', // Replace with your API Gateway API key (if you're using one)
-    region: 'YOUR_AWS_REGION', // Replace with your AWS region
-});
 
+var apigClient = apigClientFactory.newClient({});
 function showOrders() {
     const params = {}; // Add any necessary parameters
     const body = {}; // Add any necessary request body
@@ -22,15 +19,18 @@ function displayOrders(orders) {
     const ordersList = document.getElementById('ordersList');
     ordersList.innerHTML = '';
 
-    orders.forEach(function(order) {
+    const ordersData = JSON.parse(orders.body).orders; // Parse the JSON and access 'orders'
+
+    ordersData.forEach(function(order) {
         const orderDiv = document.createElement('div');
-        orderDiv.innerHTML = `<p>Order ID: ${order.orderId}</p>
+        orderDiv.innerHTML = `<p>Order ID: ${order.order_id}</p>
                               <p>Details: ${order.details}</p>
-                              <button onclick="startDelivery('${order.orderId}')">Start Delivery</button>
-                              <button onclick="completeDelivery('${order.orderId}')">Complete Delivery</button>`;
+                              <button onclick="startDelivery('${order.order_id}')">Start Delivery</button>
+                              <button onclick="completeDelivery('${order.order_id}')">Complete Delivery</button>`;
         ordersList.appendChild(orderDiv);
     });
 }
+
 
 function startDelivery(orderId) {
     // Start collecting user's location every 15 seconds and send it to API Gateway
@@ -70,6 +70,7 @@ function sendLocation(orderId, location) {
 
 function completeDelivery(orderId) {
     // Stop tracking location for the specific orderId
+    console.log(orderId)
     clearInterval(window.intervalIds[orderId]);
 
     // Call API Gateway to update that the order is delivered
